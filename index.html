@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chalinee Kaewsurin — Back-End Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1923;
+    --navy2: #1a2840;
+    --teal: #2dd4bf;
+    --teal2: #0d9488;
+    --gold: #f59e0b;
+    --white: #f8fafc;
+    --gray: #94a3b8;
+    --gray2: #64748b;
+    --card: #1e2e42;
+    --border: rgba(45,212,191,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── GLOW BLOBS ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob1 { width: 600px; height: 600px; background: var(--teal); top: -200px; right: -100px; }
+  .blob2 { width: 400px; height: 400px; background: var(--gold); bottom: 100px; left: -100px; }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 80px 0 60px;
+    position: relative;
+  }
+
+  .header-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(48px, 8vw, 80px);
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--teal);
+  }
+
+  .tagline {
+    font-size: 18px;
+    color: var(--gray);
+    max-width: 540px;
+    margin-bottom: 36px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .contact-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gray);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-item:hover { color: var(--teal); }
+
+  .contact-dot {
+    width: 6px; height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 64px;
+    padding: 64px 0;
+  }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 56px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── EXPERIENCE ── */
+  .job { margin-bottom: 36px; }
+
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+    gap: 16px;
+  }
+
+  .job-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .job-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+
+  .job-company {
+    font-size: 13px;
+    color: var(--gray2);
+    margin-bottom: 14px;
+  }
+
+  .job-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .job-bullets li {
+    font-size: 14px;
+    color: var(--gray);
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .job-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--teal);
+    font-size: 11px;
+    top: 3px;
+  }
+
+  /* ── PROJECT HIGHLIGHT ── */
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--teal), var(--teal2));
+  }
+
+  .project-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal);
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  /* ── EDUCATION ── */
+  .edu-item { margin-bottom: 24px; }
+
+  .edu-school {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 3px;
+  }
+
+  .edu-degree {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+
+  .edu-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gray2);
+    display: flex;
+    gap: 16px;
+  }
+
+  .edu-gpa {
+    color: var(--teal);
+    font-weight: 500;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {}
+
+  /* ── SKILL BLOCK ── */
+  .skill-block { margin-bottom: 32px; }
+
+  .skill-category {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: rgba(45,212,191,0.08);
+    border: 1px solid rgba(45,212,191,0.2);
+    padding: 5px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .tag:hover {
+    background: rgba(45,212,191,0.15);
+    border-color: var(--teal);
+  }
+
+  .tag.gold {
+    color: var(--gold);
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.2);
+  }
+
+  /* ── LANGUAGE BAR ── */
+  .lang-item { margin-bottom: 16px; }
+
+  .lang-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    font-size: 13px;
+  }
+
+  .lang-name { color: var(--white); font-weight: 500; }
+  .lang-level { color: var(--gray2); font-size: 12px; font-family: 'DM Mono', monospace; }
+
+  .lang-bar-bg {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .lang-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--teal2), var(--teal));
+    border-radius: 2px;
+    transform-origin: left;
+    animation: growBar 1s ease 0.8s both;
+  }
+
+  @keyframes growBar {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* ── SOFT SKILLS ── */
+  .soft-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .soft-list li {
+    font-size: 13px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .soft-list li::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--teal);
+    flex-shrink: 0;
+  }
+
+  /* ── GITHUB CARD ── */
+  .github-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    transition: all 0.25s;
+    margin-top: 8px;
+  }
+
+  .github-card:hover {
+    border-color: var(--teal);
+    background: rgba(45,212,191,0.05);
+    transform: translateY(-2px);
+  }
+
+  .github-icon {
+    width: 36px; height: 36px;
+    background: rgba(45,212,191,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .github-icon svg { width: 18px; height: 18px; fill: var(--teal); }
+
+  .github-info {}
+  .github-label { font-size: 12px; font-weight: 600; color: var(--white); }
+  .github-url { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--teal); }
+
+  /* ── REFERENCE ── */
+  .ref-name { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 2px; }
+  .ref-role { font-size: 12px; color: var(--gray2); margin-bottom: 4px; }
+  .ref-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray2); font-style: italic; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gray2);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .main-grid { grid-template-columns: 1fr; gap: 40px; }
+    h1 { font-size: 42px; }
+    .contact-bar { gap: 14px; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; color: #1a1a1a; }
+    .blob, body::before { display: none; }
+    header { padding: 32px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <p class="header-tag">Software Engineer · Available for opportunities</p>
+    <h1>Chalinee<br><em>Kaewsurin</em></h1>
+    <p class="tagline">
+      Back-End focused engineer with 3+ years building production systems —
+      APIs, databases, and Agentic AI integration.
+    </p>
+    <div class="contact-bar">
+      <a href="tel:0969495178" class="contact-item">
+        <span class="contact-dot"></span>096-949-5178
+      </a>
+      <a href="mailto:dalakaewsurin@gmail.com" class="contact-item">
+        <span class="contact-dot"></span>dalakaewsurin@gmail.com
+      </a>
+      <a href="https://github.com/chalineeDa" target="_blank" class="contact-item">
+        <span class="contact-dot"></span>github.com/chalineeDa
+      </a>
+      <span class="contact-item">
+        <span class="contact-dot"></span>Pathumthani, Thailand
+      </span>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+
+      <!-- EXPERIENCE -->
+      <div class="section fade-in" style="animation-delay:0.4s">
+        <p class="section-label">Experience</p>
+
+        <!-- Job 1 -->
+        <div class="job">
+          <div class="job-header">
+            <span class="job-title">Senior Associate I — Software Engineer</span>
+            <span class="job-date">Feb 2023 – Mar 2026</span>
+          </div>
+          <p class="job-company">Ngern Turbo Co., Ltd. (Public) · Technology Division</p>
+          <ul class="job-bullets">
+            <li>Designed and maintained PostgreSQL databases supporting core business systems</li>
+            <li>Built and maintained RESTful APIs consumed by front-end and third-party services</li>
+            <li>Developed a car insurance sales system — end-to-end from DB schema to API layer</li>
+            <li>Integrated Agentic AI pipelines to automate back-end workflows and increase efficiency</li>
+            <li>Developed full-stack features using C#, TypeScript, Python, Node.js and HTML</li>
+            <li>Collaborated cross-functionally in Agile sprints across the full SDLC</li>
+          </ul>
+          <div class="project-card">
+            <p class="project-name">■ Car Insurance Sales System</p>
+            <p class="project-desc">End-to-end insurance sales platform covering policy management, pricing engine, and customer portal. Built with C# back-end, PostgreSQL, and RESTful API integration with insurance providers.</p>
+          </div>
+        </div>
+
+        <!-- Job 2 -->
+        <div class="job">
+          <div class="job-header">
+            <span class="job-title">Software Engineering Intern</span>
+            <span class="job-date">Nov 2020 – Apr 2021</span>
+          </div>
+          <p class="job-company">Ngern Turbo Co., Ltd. · Nonthaburi</p>
+          <ul class="job-bullets">
+            <li>Built back-end features under senior developer guidance</li>
+            <li>Designed database schemas and wrote C# programs from scratch</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- EDUCATION -->
+      <div class="section fade-in" style="animation-delay:0.5s">
+        <p class="section-label">Education</p>
+
+        <div class="edu-item">
+          <p class="edu-school">Panyapiwat Institute of Management (PIM)</p>
+          <p class="edu-degree">B.Sc. Information Technology</p>
+          <div class="edu-meta">
+            <span>2019 – 2022</span>
+            <span class="edu-gpa">GPA 3.62</span>
+          </div>
+        </div>
+
+        <div class="edu-item">
+          <p class="edu-school">Satrichaiyaphum School</p>
+          <p class="edu-degree">Science-Mathematics · Grade 7–12</p>
+          <div class="edu-meta">
+            <span>2013 – 2019</span>
+            <span class="edu-gpa">GPA 3.78</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- SPECIALTIES -->
+      <div class="skill-block fade-in" style="animation-delay:0.45s">
+        <p class="section-label">Specialties</p>
+        <div class="tags">
+          <span class="tag">Back-End Dev</span>
+          <span class="tag">RESTful API</span>
+          <span class="tag">Database Design</span>
+          <span class="tag gold">Agentic AI</span>
+          <span class="tag">Full-Stack Dev</span>
+          <span class="tag">Cloud Infra</span>
+        </div>
+      </div>
+
+      <!-- LANGUAGES -->
+      <div class="skill-block fade-in" style="animation-delay:0.5s">
+        <p class="section-label">Languages</p>
+        <div class="tags">
+          <span class="tag">C#</span>
+          <span class="tag">Python</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">HTML</span>
+        </div>
+      </div>
+
+      <!-- DATABASE -->
+      <div class="skill-block fade-in" style="animation-delay:0.55s">
+        <p class="section-label">Database</p>
+        <div class="tags">
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">MongoDB</span>
+        </div>
+      </div>
+
+      <!-- DEVOPS -->
+      <div class="skill-block fade-in" style="animation-delay:0.6s">
+        <p class="section-label">DevOps & Cloud</p>
+        <div class="tags">
+          <span class="tag gold">AWS</span>
+          <span class="tag gold">Docker</span>
+          <span class="tag gold">CI/CD</span>
+        </div>
+      </div>
+
+      <!-- HUMAN LANGUAGES -->
+      <div class="skill-block fade-in" style="animation-delay:0.65s">
+        <p class="section-label">Languages</p>
+        <div class="lang-item">
+          <div class="lang-header">
+            <span class="lang-name">Thai</span>
+            <span class="lang-level">Native</span>
+          </div>
+          <div class="lang-bar-bg">
+            <div class="lang-bar-fill" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-header">
+            <span class="lang-name">English</span>
+            <span class="lang-level">Conversational</span>
+          </div>
+          <div class="lang-bar-bg">
+            <div class="lang-bar-fill" style="width:55%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOFT SKILLS -->
+      <div class="skill-block fade-in" style="animation-delay:0.7s">
+        <p class="section-label">Soft Skills</p>
+        <ul class="soft-list">
+          <li>Communication</li>
+          <li>Team Collaboration</li>
+          <li>Fast Learner</li>
+          <li>Analytical Problem-Solving</li>
+        </ul>
+      </div>
+
+      <!-- PORTFOLIO -->
+      <div class="skill-block fade-in" style="animation-delay:0.75s">
+        <p class="section-label">Portfolio</p>
+        <a href="https://github.com/chalineeDa" target="_blank" class="github-card">
+          <div class="github-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </div>
+          <div class="github-info">
+            <p class="github-label">GitHub</p>
+            <p class="github-url">github.com/chalineeDa</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- REFERENCE -->
+      <div class="skill-block fade-in" style="animation-delay:0.8s">
+        <p class="section-label">Reference</p>
+        <p class="ref-name">Mr. Aphisit Thaosri</p>
+        <p class="ref-role">Manager — Ngern Turbo Co., Ltd.</p>
+        <p class="ref-note">Contact available upon request</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <footer>
+    <span>Chalinee Kaewsurin · Resume</span>
+    <span>chalineeDa · github.com/chalineeDa</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
